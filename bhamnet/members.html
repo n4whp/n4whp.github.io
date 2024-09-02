@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+    <title>Members</title>
+
+
+<head>
+    <link rel="shortcut icon" href="logo.ico">
+    <style>
+        body {
+            margin: 0;
+            background-color: #FCF5E5;
+        }
+
+        ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            width: 15%;
+            background-color: #FCF5E5;
+            position: fixed;
+            height: 100%;
+            overflow: auto;
+            top: 0;
+        }
+
+        li a {
+            display: block;
+            color: #000;
+            padding: 8px 16px;
+            text-decoration: none;
+            height: 23px;
+            font-size: 20px;
+        }
+
+        li a.active {
+            background-color: #1629b2ca;
+            color: white;
+        }
+
+        li a:hover:not(.active) {
+            background-color: #555;
+            color: white;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: row;
+        }
+
+        #main-content {
+            flex: 1;
+            margin-left: 15%;
+            padding: 20px;
+        }
+
+        #map-container {
+            flex: 1;
+            text-align: right;
+            margin-right: 20px;
+            margin-top: 50px;
+        }
+
+        #map {
+            width: 500px;
+            height: 500px;
+        }
+    </style>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</head>
+<body>
+
+<ul>
+    <center><li><img src="logo.png" width="100"></li></center>
+    <hr class="dashed">
+    <li><a href="bhamnet.html">Home</a></li>
+    <li><a href="protocol.html">Protocols</a></li>
+    <li><a class="active" href="members.html">Members</a></li>
+    <li><a href="repeaters.html">Repeaters</a></li>
+    <li><a href="nets.html">Nets</a></li>
+    <li><a href="extra.html">Extra Stuff!!</a></li>
+</ul>
+
+<div class="container">
+    <div id="main-content">
+        <center>
+            <h1>Net Members</h1>
+        </center>
+
+        <h2 style="font-size: 28;">Net Control Operator(s)</h2>
+        <ul2>
+            <li style="margin-left:3%">Will Payne  N4WHP</li>
+        </ul2>
+
+        <h2 style="font-size: 28;">Members </h2>
+        <p1>* Indicates Founding Member.</p1>
+
+        <table border="1" style="text-align:center; margin-left:5%" width="560">
+            <tr style="font-weight: bold; font-size: 120%; border-color: grey;">
+                <td>Name</td>
+                <td>Callsign</td>
+                <td>Locality/Precinct</td>
+                <td>State</td>
+                <td>Email</td>
+            </tr>
+            <tr>
+                <td>Will Payne*</td>
+                <td>KQ4NTQ</td>
+                <td>Buckingham, Maysville</td>
+                <td>VA</td>
+                <td>kq4ntq@gmail.com</td>
+            </tr>
+            <tr>
+                <td>James Carwile*</td>
+                <td>KQ4GGH</td>
+                <td>Buckingham, Maysville</td>
+                <td>VA</td>
+                <td>N/A</td>
+            </tr>
+            <tr>
+                <td>Sam Davis</td>
+                <td>KQ4PUI</td>
+                <td>Buckingham, Glenmore</td>
+                <td>VA</td>
+                <td>N/A</td>
+            </tr>
+        </table>
+
+        <h2 style="font-size: 28;">Becoming a Member </h2>
+        <p style="font-size: 20;">To become a member you must check into the net at least 15 non-consecutive times. </p>
+        <p style="font-size: 20;" >If you do not check in for 1 month your streak will restart.</p>
+        <p style="font-size: 20;">Check ins into the round table will not count.</p>
+    </div>
+
+    <div id="map-container">
+        <div id="map"></div>
+        <script>
+            var map = L.map('map').setView([37.55175256592936, -78.55618362729663], 9.5);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            var memberLocations = [
+                { name: "KQ4NTQ 'Will' ", latlng: [37.5837575013375, -78.5796922133928] },
+                { name: "KQ4GGH 'James' ", latlng: [37.591206012104365, -78.60089235586256] },
+                { name: "KQ4PUI 'Sam' ", latlng: [37.73475962803702, -78.55550096069986] },
+            ];
+
+            memberLocations.forEach(function(member) {
+                L.marker(member.latlng).addTo(map).bindPopup(member.name);
+            });
+        </script>
+    </div>
+</div>
+
+</body>
+</html>
