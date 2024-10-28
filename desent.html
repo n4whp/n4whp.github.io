@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DeSent Chat Client</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #1e1e1e; color: #f1f1f1; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+    #chatContainer { width: 500px; text-align: center; background-color: #333; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); }
+    h1 { color: #00d1b2; font-size: 24px; }
+    #messages { border: 1px solid #555; height: 300px; overflow-y: scroll; padding: 10px; margin-bottom: 10px; background-color: #222; color: #00d1b2; border-radius: 4px; text-align: left; }
+    #messages p { margin: 5px 0; color: #f1f1f1; }
+    .input-group { margin-bottom: 10px; display: flex; }
+    input[type="text"] { flex: 1; padding: 10px; border: none; border-radius: 4px; margin-right: 5px; background-color: #444; color: #f1f1f1; }
+    button { padding: 10px 20px; border: none; background-color: #00d1b2; color: #1e1e1e; border-radius: 4px; cursor: pointer; font-weight: bold; }
+    button:disabled { background-color: #666; color: #333; cursor: not-allowed; }
+    input[type="text"]:focus { outline: none; border: 1px solid #00d1b2; }
+  </style>
+</head>
+<body>
+  <div id="chatContainer">
+    <h1>DeSent Chat</h1>
+    <div class="input-group">
+      <input type="text" id="ngrokString" placeholder="Enter ngrok string" />
+    </div>
+    <div class="input-group">
+      <input type="text" id="username" placeholder="Enter your username" />
+      <button onclick="connect()">Connect</button>
+    </div>
+    <div id="messages"></div>
+    <div class="input-group">
+      <input type="text" id="messageInput" placeholder="Type a message..." disabled />
+      <button onclick="sendMessage()" disabled>Send</button>
+    </div>
+  </div>
+
+  <script>
+    let websocket;
+    let connected = false;
+
+    // Connect to WebSocket using ngrok string
+    function connect() {
+      const ngrokString = document.getElementById("ngrokString").value.trim();
+      const username = document.getElementById("username").value.trim();
+      if (!ngrokString || !username) {
+        alert("Please enter both ngrok string and username.");
+        return;
+      }
+
+      const wsUrl = `wss://${ngrokString}.ngrok-free.app`; // Modify the URL based on the server setup
+      websocket = new WebSocket(wsUrl);
+
+      websocket.onopen = () => {
+        connected = true;
+        websocket.send(username); // Send username as the first message
+        document.getElementById("messages").innerHTML += `<p><em>Connected as ${username}</em></p>`;
+        document.getElementById("messageInput").disabled = false;
+        document.querySelector("button[onclick='sendMessage()']").disabled = false;
+      };
+
+      websocket.onmessage = (event) => {
+        const message = event.data;
+        document.getElementById("messages").innerHTML += `<p>${message}</p>`;
+        document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
+      };
+
+      websocket.onclose = () => {
+        connected = false;
+        document.getElementById("messages").innerHTML += `<p><em>Disconnected</em></p>`;
+        document.getElementById("messageInput").disabled = true;
+        document.querySelector("button[onclick='sendMessage()']").disabled = true;
+      };
+
+      websocket.onerror = (error) => {
+        console.error("WebSocket error:", error);
+        document.getElementById("messages").innerHTML += `<p style="color: red;">Error: Unable to connect</p>`;
+      };
+    }
+
+    // Send a message to the WebSocket server
+    function sendMessage() {
+      if (!connected) {
+        alert("Please connect first!");
+        return;
+      }
+
+      const message = document.getElementById("messageInput").value.trim();
+      if (message) {
+        websocket.send(message);
+        document.getElementById("messages").innerHTML += `<p><strong>You:</strong> ${message}</p>`;
+        document.getElementById("messageInput").value = ""; // Clear input after sending
+      }
+    }
+  </script>
+</body>
+</html>
