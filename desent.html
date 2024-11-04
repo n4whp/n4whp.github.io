@@ -106,7 +106,7 @@
     </div>
 
     <div id="chatContainer">
-        <h1>DeSent Chat</h1>
+        <h1>DeSent V 0.1.0</h1>
         <div class="input-group">
             <input type="text" id="ngrokString" placeholder="Enter ngrok string" />
         </div>
@@ -122,86 +122,95 @@
     </div>
 
     <script>
-        let websocket;
-        let connected = false;
-
-        // Fetch the server list from Firebase and display it
-        function fetchServers() {
-            fetch('https://desent-public-servers-default-rtdb.firebaseio.com/desent-public-servers.json')
-                .then(response => response.json())
-                .then(data => {
-                    const serverList = document.getElementById('server-list');
-                    serverList.innerHTML = '';
-                    for (const serverKey in data) {
-                        const server = data[serverKey];
-                        const listItem = document.createElement('li');
-                        // Display in the format: [Server Name] [Region] : [Identifier]
-                        listItem.textContent = `${server.name || `Server ${serverKey}`} ${server.region || 'N/A'} : ${server.url || 'No URL'}`;
-                        listItem.onclick = () => {
-                            document.getElementById('ngrokString').value = server.url; // Auto-fill ngrokString
-                        };
-                        serverList.appendChild(listItem);
-                    }
-                })
-                .catch(error => console.error('Error fetching servers:', error));
-        }
-
-        // Call fetchServers to load the initial data
-        fetchServers();
-
-        // Connect to WebSocket using ngrok string
-        function connect() {
-            const ngrokString = document.getElementById("ngrokString").value.trim();
-            const username = document.getElementById("username").value.trim();
-            if (!ngrokString || !username) {
-                alert("Please enter both ngrok string and username.");
-                return;
-            }
-
-            const wsUrl = `wss://${ngrokString}.ngrok-free.app`; // Modify the URL based on the server setup
-            websocket = new WebSocket(wsUrl);
-
-            websocket.onopen = () => {
-                connected = true;
-                websocket.send(username); // Send username as the first message
-                document.getElementById("messages").innerHTML += `<p><em>Connected as ${username}</em></p>`;
-                document.getElementById("messageInput").disabled = false;
-                document.querySelector("button[onclick='sendMessage()']").disabled = false;
-            };
-
-            websocket.onmessage = (event) => {
-                const message = event.data;
-                document.getElementById("messages").innerHTML += `<p>${message}</p>`;
-                document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
-            };
-
-            websocket.onclose = () => {
-                connected = false;
-                document.getElementById("messages").innerHTML += `<p><em>Disconnected</em></p>`;
-                document.getElementById("messageInput").disabled = true;
-                document.querySelector("button[onclick='sendMessage()']").disabled = true;
-            };
-
-            websocket.onerror = (error) => {
-                console.error("WebSocket error:", error);
-                document.getElementById("messages").innerHTML += `<p style="color: red;">Error: Unable to connect</p>`;
-            };
-        }
-
-        // Send a message to the WebSocket server
-        function sendMessage() {
-            if (!connected) {
-                alert("Please connect first!");
-                return;
-            }
-
-            const message = document.getElementById("messageInput").value.trim();
-            if (message) {
-                websocket.send(message);
-                document.getElementById("messages").innerHTML += `<p><strong>You:</strong> ${message}</p>`;
-                document.getElementById("messageInput").value = ""; // Clear input after sending
-            }
-        }
-    </script>
+      let websocket;
+      let connected = false;
+  
+      // Fetch the server list from Firebase and display it
+      function fetchServers() {
+          fetch('https://desent-public-servers-default-rtdb.firebaseio.com/desent-public-servers.json')
+              .then(response => response.json())
+              .then(data => {
+                  const serverList = document.getElementById('server-list');
+                  serverList.innerHTML = '';
+                  for (const serverKey in data) {
+                      const server = data[serverKey];
+                      const listItem = document.createElement('li');
+                      // Display in the format: [Server Name] [Region] : [Identifier]
+                      listItem.textContent = `${server.name || `Server ${serverKey}`} ${server.region || 'N/A'} : ${server.url || 'No URL'}`;
+                      listItem.onclick = () => {
+                          document.getElementById('ngrokString').value = server.url; // Auto-fill ngrokString
+                      };
+                      serverList.appendChild(listItem);
+                  }
+              })
+              .catch(error => console.error('Error fetching servers:', error));
+      }
+  
+      // Call fetchServers to load the initial data
+      fetchServers();
+  
+      // Connect to WebSocket using ngrok string
+      function connect() {
+          const ngrokString = document.getElementById("ngrokString").value.trim();
+          const username = document.getElementById("username").value.trim();
+          if (!ngrokString || !username) {
+              alert("Please enter both ngrok string and username.");
+              return;
+          }
+  
+          const wsUrl = `wss://${ngrokString}.ngrok-free.app`; // Modify the URL based on the server setup
+          websocket = new WebSocket(wsUrl);
+  
+          websocket.onopen = () => {
+              connected = true;
+              websocket.send(username); // Send username as the first message
+              document.getElementById("messages").innerHTML += `<p><em>Connected as ${username}</em></p>`;
+              document.getElementById("messageInput").disabled = false;
+              document.querySelector("button[onclick='sendMessage()']").disabled = false;
+          };
+  
+          websocket.onmessage = (event) => {
+              const message = event.data;
+              document.getElementById("messages").innerHTML += `<p>${message}</p>`;
+              document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
+          };
+  
+          websocket.onclose = () => {
+              connected = false;
+              document.getElementById("messages").innerHTML += `<p><em>Disconnected</em></p>`;
+              document.getElementById("messageInput").disabled = true;
+              document.querySelector("button[onclick='sendMessage()']").disabled = true;
+          };
+  
+          websocket.onerror = (error) => {
+              console.error("WebSocket error:", error);
+              document.getElementById("messages").innerHTML += `<p style="color: red;">Error: Unable to connect</p>`;
+          };
+      }
+  
+      // Send a message to the WebSocket server
+      function sendMessage() {
+          if (!connected) {
+              alert("Please connect first!");
+              return;
+          }
+  
+          const message = document.getElementById("messageInput").value.trim();
+          if (message) {
+              websocket.send(message);
+              document.getElementById("messages").innerHTML += `<p><strong>You:</strong> ${message}</p>`;
+              document.getElementById("messageInput").value = ""; // Clear input after sending
+          }
+      }
+  
+      // Enable sending messages by pressing Enter key
+      document.getElementById("messageInput").addEventListener("keypress", function(event) {
+          if (event.key === "Enter") {
+              event.preventDefault(); // Prevents form submission if inside a form
+              sendMessage(); // Trigger sendMessage on Enter press
+          }
+      });
+  </script>
+  
 </body>
 </html>
